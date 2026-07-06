@@ -1,17 +1,6 @@
-# Virtual environment
 venv/
-
-# Dataset
 dataset/
 *.csv
-
-# Jupyter
-.ipynb_checkpoints/
-
-# Python
+notebooks/
 __pycache__/
-*.pyc
-
-# Models
-models/*.pkl
-models/*.joblib
+.ipynb_checkpoints/
