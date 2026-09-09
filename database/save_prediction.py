@@ -1,4 +1,5 @@
-from database import engine
+from database.database import engine
+
 
 def save_prediction(
     step,
@@ -11,6 +12,7 @@ def save_prediction(
     prediction,
     fraud_probability
 ):
+
     query = """
     INSERT INTO transactions1 (
         step,
@@ -37,6 +39,7 @@ def save_prediction(
     """
 
     with engine.begin() as conn:
+
         conn.exec_driver_sql(
             query,
             {
@@ -53,15 +56,3 @@ def save_prediction(
         )
 
     print("Prediction saved to PostgreSQL!")
-# Test
-save_prediction(
-    step=1,
-    transaction_type="TRANSFER",
-    amount=10000,
-    oldbalanceOrg=15000,
-    newbalanceOrig=5000,
-    oldbalanceDest=2000,
-    newbalanceDest=12000,
-    prediction=1,
-    fraud_probability=0.93
-)

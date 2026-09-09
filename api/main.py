@@ -5,10 +5,12 @@ import pandas as pd
 import joblib
 import os
 
+from database.save_prediction import save_prediction
 
-# ==========================================
-# 1. Create FastAPI application
-# ==========================================
+
+# =========================================================
+# FASTAPI APPLICATION
+# =========================================================
 
 app = FastAPI(
     title="AML Fraud Detection API",
@@ -17,9 +19,9 @@ app = FastAPI(
 )
 
 
-# ==========================================
-# 2. File paths
-# ==========================================
+# =========================================================
+# MODEL FILE PATHS
+# =========================================================
 
 MODEL_PATH = os.path.join(
     "models",
@@ -37,28 +39,25 @@ FEATURE_PATH = os.path.join(
 )
 
 
-# ==========================================
-# 3. Load trained model and preprocessing
-# ==========================================
+# =========================================================
+# LOAD MODEL, SCALER AND FEATURE NAMES
+# =========================================================
 
 model = load_model(MODEL_PATH)
 
-scaler = joblib.load(
-    SCALER_PATH
-)
+scaler = joblib.load(SCALER_PATH)
 
-feature_names = joblib.load(
-    FEATURE_PATH
-)
+feature_names = joblib.load(FEATURE_PATH)
+
 
 print("Model loaded successfully!")
 print("Scaler loaded successfully!")
 print("Feature names loaded successfully!")
 
 
-# ==========================================
-# 4. Transaction input model
-# ==========================================
+# =========================================================
+# TRANSACTION INPUT MODEL
+# =========================================================
 
 class Transaction(BaseModel):
 
@@ -77,9 +76,9 @@ class Transaction(BaseModel):
     newbalanceDest: float
 
 
-# ==========================================
-# 5. Home endpoint
-# ==========================================
+# =========================================================
+# HOME ENDPOINT
+# =========================================================
 
 @app.get("/")
 def home():
@@ -91,36 +90,59 @@ def home():
     }
 
 
-# ==========================================
-# 6. Prediction endpoint
-# ==========================================
+# =========================================================
+# PREDICTION ENDPOINT
+# =========================================================
 
 @app.post("/predict")
 def predict(transaction: Transaction):
 
-    # Convert transaction to dictionary
+    # -----------------------------------------------------
+    # 1. Convert input data into dictionary
+    # -----------------------------------------------------
+
     data = transaction.model_dump()
 
-    # Convert dictionary to DataFrame
+
+    # -----------------------------------------------------
+    # 2. Convert dictionary into DataFrame
+    # -----------------------------------------------------
+
     df = pd.DataFrame([data])
 
-    # One-hot encode transaction type
+
+    # -----------------------------------------------------
+    # 3. Convert transaction type into numerical columns
+    # -----------------------------------------------------
+
     df = pd.get_dummies(
         df,
         columns=["type"],
         dtype=int
     )
 
-    # Make sure all training features exist
+
+    # -----------------------------------------------------
+    # 4. Match training feature columns
+    # -----------------------------------------------------
+
     df = df.reindex(
         columns=feature_names,
         fill_value=0
     )
 
-    # Scale the data
+
+    # -----------------------------------------------------
+    # 5. Scale input data
+    # -----------------------------------------------------
+
     scaled_data = scaler.transform(df)
 
-    # Get fraud probability
+
+    # -----------------------------------------------------
+    # 6. Predict using Deep Learning model
+    # -----------------------------------------------------
+
     probability = float(
         model.predict(
             scaled_data,
@@ -128,13 +150,68 @@ def predict(transaction: Transaction):
         )[0][0]
     )
 
-    # Convert probability into prediction
+
+    # -----------------------------------------------------
+    # 7. Convert probability into prediction
+    #
+    #    0 = NORMAL
+    #    1 = FRAUD
+    # -----------------------------------------------------
+
     if probability >= 0.5:
+
         prediction = "FRAUD"
+
+        # Integer value for PostgreSQL
+        prediction_value = 1
+
     else:
+
         prediction = "NORMAL"
 
+        # Integer value for PostgreSQL
+        prediction_value = 0
+
+
+    # -----------------------------------------------------
+    # 8. Save prediction into PostgreSQL
+    # -----------------------------------------------------
+
+    save_prediction(
+
+        step=transaction.step,
+
+        transaction_type=transaction.type,
+
+        amount=transaction.amount,
+
+        oldbalanceOrg=transaction.oldbalanceOrg,
+
+        newbalanceOrig=transaction.newbalanceOrig,
+
+        oldbalanceDest=transaction.oldbalanceDest,
+
+        newbalanceDest=transaction.newbalanceDest,
+
+        prediction=prediction_value,
+
+        fraud_probability=probability
+    )
+
+
+    # -----------------------------------------------------
+    # 9. Return response
+    # -----------------------------------------------------
+
     return {
+
         "prediction": prediction,
-        "fraud_probability": round(probability, 4)
+
+        "fraud_probability": round(
+            probability,
+            4
+        ),
+
+        "database_status":
+            "Prediction saved successfully"
     }
