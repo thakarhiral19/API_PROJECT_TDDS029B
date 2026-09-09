@@ -480,9 +480,9 @@ Large datasets and the Python virtual environment are excluded from the reposito
 
 This project demonstrates an end-to-end **AML/Fraud Detection System using Deep Learning**.
 
-The Deep Learning model identifies potentially fraudulent transactions, **SHAP provides explanations for model predictions**, FastAPI provides an interface for real-time prediction, and PostgreSQL stores transaction and prediction history.
+The Deep Learning model identifies potentially fraudulent transactions, FastAPI provides an interface for real-time prediction, and PostgreSQL stores transaction and prediction history.
 
-The combination of **Deep Learning, Explainable AI, REST API and Database Integration** makes the system suitable as an end-to-end academic AML/Fraud Detection project.
+The combination of **Deep Learning, REST API and Database Integration** makes the system suitable as an end-to-end academic AML/Fraud Detection project.
 
 ---
 
