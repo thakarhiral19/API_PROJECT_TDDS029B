@@ -1,115 +1,72 @@
-# AML / Fraud Detection System Using Deep Learning
+# AML Fraud Detection System Using Deep Learning
 
-## 📌 Project Overview
+## Project Overview
 
-This project is an **Anti-Money Laundering (AML) and Fraud Detection System** that uses **Deep Learning** to identify whether a financial transaction is **Normal or Fraudulent**.
+This project is an Anti-Money Laundering (AML) and Fraud Detection System developed using Deep Learning.
 
-The system takes transaction details as input, preprocesses the data, uses a trained Deep Learning model to predict fraud probability, and stores the prediction results in a **PostgreSQL database**.
+The system uses transaction data to identify whether a transaction is **Normal** or **Fraudulent**. A Deep Learning neural network is trained to learn patterns from transaction features and predict the probability of fraud.
 
-The project also includes **FastAPI** for providing a REST API through which users can submit transaction details and receive predictions.
-
----
-
-## 🎯 Objectives
-
-The main objectives of this project are:
-
-* To understand and preprocess financial transaction data.
-* To identify fraudulent transactions using Deep Learning.
-* To handle the highly imbalanced nature of fraud data.
-* To evaluate the performance of the Deep Learning model.
-* To save the trained model and preprocessing objects.
-* To provide fraud prediction through a FastAPI REST API.
-* To store transaction predictions and fraud probabilities in PostgreSQL.
+The project also includes **SHAP-based explainability**, **fairness analysis**, **FastAPI**, and **PostgreSQL** for building a complete fraud detection pipeline.
 
 ---
 
-## 🛠️ Technologies Used
+## Objectives
 
-* **Python**
-* **Pandas**
-* **NumPy**
-* **Scikit-learn**
-* **TensorFlow / Keras**
-* **Deep Learning / Artificial Neural Network (ANN)**
-* **FastAPI**
-* **Pydantic**
-* **PostgreSQL**
-* **SQLAlchemy**
-* **Joblib**
-* **Jupyter Notebook**
-* **VS Code**
-* **Git & GitHub**
+* Detect fraudulent transactions using Deep Learning.
+* Handle highly imbalanced transaction data.
+* Preprocess and transform transaction features.
+* Evaluate the Deep Learning model using suitable classification metrics.
+* Explain model predictions using SHAP.
+* Analyze model performance across different transaction types.
+* Provide predictions through a FastAPI endpoint.
+* Store prediction results in PostgreSQL.
+* Build a reproducible end-to-end fraud detection system.
 
 ---
 
-## 📂 Project Structure
+## Technologies Used
 
-```text
-AML_DeepLearning_Project/
-│
-├── api/
-│   └── main.py
-│
-├── database/
-│   ├── database.py
-│   └── save_prediction.py
-│
-├── dataset/
-│   └── Dataset files
-│
-├── models/
-│   ├── fraud_detection_model.keras
-│   ├── scaler.pkl
-│   └── feature_names.pkl
-│
-├── notebooks/
-│   ├── 01_data_understanding.ipynb
-│   ├── 02_data_cleaning.ipynb
-│   └── 05_deep_learning.ipynb
-│
-├── README.md
-└── .gitignore
-```
-
-> The large dataset and virtual environment are not included in the GitHub repository.
+* Python
+* Pandas
+* NumPy
+* Scikit-learn
+* TensorFlow / Keras
+* SHAP
+* FastAPI
+* Pydantic
+* SQLAlchemy
+* PostgreSQL
+* Matplotlib
+* Seaborn
+* Joblib
+* Jupyter Notebook
+* GitHub
 
 ---
 
-## 📊 Dataset
+## Dataset
 
-The project uses financial transaction data for AML and fraud detection.
+The project uses a transaction-based fraud detection dataset containing financial transaction information.
 
-### Important Features
+Important features include:
 
 | Feature          | Description                                                                |
 | ---------------- | -------------------------------------------------------------------------- |
 | `step`           | Represents the time step of the transaction                                |
 | `type`           | Type of transaction such as PAYMENT, TRANSFER, CASH_OUT, CASH_IN and DEBIT |
-| `amount`         | Transaction amount                                                         |
-| `oldbalanceOrg`  | Sender's balance before the transaction                                    |
-| `newbalanceOrig` | Sender's balance after the transaction                                     |
-| `oldbalanceDest` | Receiver's balance before the transaction                                  |
-| `newbalanceDest` | Receiver's balance after the transaction                                   |
+| `amount`         | Amount involved in the transaction                                         |
+| `oldbalanceOrg`  | Sender balance before the transaction                                      |
+| `newbalanceOrig` | Sender balance after the transaction                                       |
+| `oldbalanceDest` | Receiver balance before the transaction                                    |
+| `newbalanceDest` | Receiver balance after the transaction                                     |
 | `isFraud`        | Target variable: 0 = Normal, 1 = Fraud                                     |
 | `isFlaggedFraud` | Original rule-based fraud flag                                             |
 
-The target variable used for Deep Learning is:
-
-```text
-isFraud
-```
-
-where:
-
-```text
-0 → Normal Transaction
-1 → Fraudulent Transaction
-```
+The original dataset is not included in this repository because of its large size.
 
 ---
 
-## 🔄 Project Workflow
+## Project Workflow
 
 ```text
 Raw Dataset
@@ -120,147 +77,77 @@ Data Cleaning
      ↓
 Feature Engineering
      ↓
-Train/Test Split
+Exploratory Data Analysis
      ↓
-Categorical Encoding
+Train-Test Split
+     ↓
+One-Hot Encoding
      ↓
 Feature Scaling
-     ↓
-Class Imbalance Handling
      ↓
 Deep Learning Model
      ↓
 Model Evaluation
      ↓
-  FastAPI
+SHAP Explainability
+     ↓
+Fairness Analysis
+     ↓
+FastAPI
      ↓
 PostgreSQL
 ```
 
 ---
 
-# 📘 1. Data Understanding
+## Data Preprocessing
 
-The Data Understanding stage was performed to understand the structure and quality of the dataset.
+The following preprocessing steps are used:
 
-The following were checked:
-
-* Dataset shape
-* Column names
-* Data types
-* Missing values
-* Duplicate records
-* Target variable distribution
-* Fraud and normal transaction counts
-
-Notebook:
-
-```text
-notebooks/01_data_understanding.ipynb
-```
+1. Loading the transaction dataset.
+2. Checking dataset structure and data types.
+3. Checking missing values and duplicate records.
+4. Separating the target variable `isFraud`.
+5. Encoding the categorical `type` feature using one-hot encoding.
+6. Splitting the data into training and testing sets.
+7. Applying `StandardScaler` to numerical features.
+8. Handling class imbalance using class weights.
 
 ---
 
-# 🧹 2. Data Cleaning
+## Deep Learning Model
 
-The dataset was cleaned and prepared for further processing.
+A feed-forward neural network is used for fraud classification.
 
-The cleaning and preparation process includes:
+The model contains:
 
-* Handling duplicate records
-* Checking missing values
-* Cleaning the transaction data
-* Preparing features and target variable
-* Preparing data for Deep Learning
-
-Notebook:
-
-```text
-notebooks/02_data_cleaning.ipynb
-```
-
----
-
-# 🧠 3. Deep Learning Model
-
-A **Deep Learning Artificial Neural Network (ANN)** was developed using TensorFlow/Keras.
-
-### Model Architecture
-
-```text
-Input Layer
-     ↓
-Dense Layer - 64 neurons - ReLU
-     ↓
-Dropout - 30%
-     ↓
-Dense Layer - 32 neurons - ReLU
-     ↓
-Dropout - 20%
-     ↓
-Dense Layer - 16 neurons - ReLU
-     ↓
-Output Layer - 1 neuron - Sigmoid
-```
-
-### Model Compilation
+* Input layer
+* Dense layer with 64 neurons
+* Dropout layer
+* Dense layer with 32 neurons
+* Dropout layer
+* Dense layer with 16 neurons
+* Output layer with sigmoid activation
 
 The model uses:
 
 * **Optimizer:** Adam
 * **Loss Function:** Binary Cross-Entropy
-* **Output Activation:** Sigmoid
+* **Output:** Fraud probability
+* **Early Stopping:** Used to reduce unnecessary training and overfitting.
 
-The model predicts a probability between:
-
-```text
-0 and 1
-```
-
-A threshold of `0.5` is used:
+The output probability is converted into:
 
 ```text
 Probability >= 0.5 → FRAUD
 Probability < 0.5  → NORMAL
 ```
 
-Notebook:
-
-```text
-notebooks/05_deep_learning.ipynb
-```
-
 ---
 
-# ⚖️ 4. Class Imbalance
+## Model Evaluation
 
-Fraudulent transactions are much fewer than normal transactions.
-
-Therefore, class imbalance needs to be handled carefully.
-
-The project uses **class weights** during Deep Learning model training so that the model gives more importance to the minority fraud class.
-
-This helps reduce the possibility of the model simply predicting every transaction as normal.
-
----
-
-# ⏹️ 5. Early Stopping
-
-**Early Stopping** is used during training.
-
-It monitors validation loss and stops training when the model stops improving.
-
-This helps:
-
-* Reduce unnecessary training
-* Reduce overfitting
-* Restore the best model weights
-
----
-
-# 📈 6. Model Evaluation
-
-The Deep Learning model is evaluated using:
+The model is evaluated using:
 
 * Accuracy
 * Precision
@@ -269,23 +156,54 @@ The Deep Learning model is evaluated using:
 * Confusion Matrix
 * ROC-AUC
 
-### Why these metrics?
-
-Accuracy alone is not sufficient for fraud detection because the dataset is highly imbalanced.
-
-Therefore, **Precision, Recall, F1-score and ROC-AUC** are also considered.
-
-#
+For fraud detection, precision and recall are particularly important because the dataset contains a highly imbalanced target variable.
 
 ---
 
-# 🚀 7. FastAPI
+## SHAP Explainability
 
-FastAPI is used to expose the Deep Learning model through a REST API.
+SHAP (SHapley Additive exPlanations) is used to explain the predictions generated by the Deep Learning model.
 
-The API accepts transaction information in JSON format.
+SHAP helps identify which transaction features contribute towards a model prediction.
 
-Example:
+Two visualizations are generated:
+
+* SHAP Waterfall Plot
+* SHAP Feature Importance Plot
+
+This makes the fraud detection model more interpretable instead of treating it as a complete black box.
+
+---
+
+## Fairness Analysis
+
+Fairness analysis is performed to compare model performance across different transaction types.
+
+The dataset does not contain demographic sensitive attributes such as age, gender or ethnicity. Therefore, the analysis uses **transaction type groups** rather than claiming demographic fairness.
+
+The following metrics are compared:
+
+* Precision
+* Recall
+* False Positive Rate
+* Number of transactions
+* Actual fraud cases
+
+This helps identify whether the model behaves differently for different transaction categories.
+
+---
+
+## FastAPI
+
+FastAPI is used to provide an API for real-time fraud prediction.
+
+The main endpoint is:
+
+```text
+POST /predict
+```
+
+A transaction can be submitted as JSON:
 
 ```json
 {
@@ -299,195 +217,152 @@ Example:
 }
 ```
 
-The API then:
+The API:
 
-```text
-JSON Input
-    ↓
-Validation
-    ↓
-DataFrame Conversion
-    ↓
-Transaction Type Encoding
-    ↓
-Feature Matching
-    ↓
-Scaling
-    ↓
-Deep Learning Prediction
-    ↓
-Fraud Probability
-    ↓
-FRAUD / NORMAL
-```
+1. Receives the transaction.
+2. Converts the input into a DataFrame.
+3. Performs the same feature encoding used during training.
+4. Aligns the features using `feature_names.pkl`.
+5. Scales the input using `scaler.pkl`.
+6. Loads the trained Deep Learning model.
+7. Generates fraud probability.
+8. Returns the prediction.
+9. Stores the prediction in PostgreSQL.
 
 ---
 
-# 🗄️ 8. PostgreSQL Database
+## PostgreSQL
 
-PostgreSQL is used to store prediction results generated by the API.
+PostgreSQL is used to store prediction records generated through the API.
 
-The stored information includes:
+Stored information includes:
 
 * Transaction step
 * Transaction type
-* Transaction amount
-* Sender balance before transaction
-* Sender balance after transaction
-* Receiver balance before transaction
-* Receiver balance after transaction
+* Amount
+* Sender balances
+* Receiver balances
 * Prediction
 * Fraud probability
 
-The database table used by the API is:
-
-```text
-transactions1
-```
-
-This allows transaction prediction history to be stored and retrieved later.
+This provides a history of predictions made through the API.
 
 ---
 
-# 💾 9. Saved Model Files
-
-The trained Deep Learning model is saved as:
+## Project Structure
 
 ```text
-models/fraud_detection_model.keras
+AML_DeepLearning_Project
+│
+├── api/
+│   └── main.py
+│
+├── database/
+│   ├── database.py
+│   └── save_prediction.py
+│
+├── explainability/
+│   └── shap_explanation.py
+│
+├── fairness/
+│   └── fairness_analysis.py
+│
+├── models/
+│   ├── fraud_detection_model.keras
+│   ├── scaler.pkl
+│   └── feature_names.pkl
+│
+├── notebooks/
+│   ├── 01_data_understanding.ipynb
+│   ├── 02_data_cleaning.ipynb
+│   └── 05_deep_learning.ipynb
+│
+├── README.md
+├── requirements.txt
+└── .gitignore
 ```
-
-The feature scaler is saved as:
-
-```text
-models/scaler.pkl
-```
-
-The training feature names are saved as:
-
-```text
-models/feature_names.pkl
-```
-
-These files allow the FastAPI application to use the same trained model and preprocessing process during prediction.
 
 ---
 
-# 🧪 10. API Testing
+## Running the Project
 
-The API can be tested using **FastAPI Swagger UI**.
+### 1. Create and activate virtual environment
 
-Start the API using:
+```powershell
+venv\Scripts\activate
+```
 
-```bash
+### 2. Install dependencies
+
+```powershell
+pip install -r requirements.txt
+```
+
+### 3. Start the FastAPI server
+
+Run from the project root:
+
+```powershell
 uvicorn api.main:app --reload
 ```
 
-Then open:
+### 4. Open Swagger UI
 
 ```text
 http://127.0.0.1:8000/docs
 ```
 
-The `/predict` endpoint can be tested using the **Try it out** option.
+### 5. Test the `/predict` endpoint
 
-The API returns:
-
-```json
-{
-  "prediction": "NORMAL",
-  "fraud_probability": 0.02,
-  "database_status": "Prediction saved successfully"
-}
-```
+Send a transaction through Swagger and check the returned prediction and fraud probability.
 
 The prediction is also stored in PostgreSQL.
 
 ---
 
-# 🧩 11. Complete System Architecture
+## Model Files
+
+The trained model and preprocessing files are:
 
 ```text
-                 Financial Transaction
-                         │
-                         ▼
-                  ┌─────────────┐
-                  │  FastAPI    │
-                  └──────┬──────┘
-                         │
-                         ▼
-                 Input Validation
-                         │
-                         ▼
-                 Data Preprocessing
-                         │
-                         ▼
-                      Scaler
-                         │
-                         ▼
-              ┌────────────────────┐
-              │ Deep Learning ANN   │
-              └─────────┬──────────┘
-                        │
-                        │
-                        ▼                  
-                Fraud Probability      
-                      │            
-                      ▼
-                 FRAUD / NORMAL
-                      │
-                      ▼
-                 PostgreSQL
-              Prediction History
+models/
+├── fraud_detection_model.keras
+├── scaler.pkl
+└── feature_names.pkl
 ```
 
----
-
-# 🔐 12. Security
-
-Sensitive information such as database passwords should not be hard-coded or uploaded to GitHub.
-
-Environment variables such as `.env` should be excluded using `.gitignore`.
-
-The `.env` file should **never be committed to GitHub**.
+* `fraud_detection_model.keras` → trained Deep Learning model
+* `scaler.pkl` → fitted StandardScaler
+* `feature_names.pkl` → feature order used during training
 
 ---
 
-# 📁 13. GitHub
+## Important Note
 
-This repository contains the source code, notebooks, model-related files and project documentation required to understand and run the project.
+The original transaction dataset is not included in this repository because of its large size.
 
-Large datasets and the Python virtual environment are excluded from the repository.
-
----
-
-# ✅ Project Status
-
-* [x] Data Understanding
-* [x] Data Cleaning
-* [x] Feature Engineering
-* [x] Deep Learning Model
-* [x] Class Imbalance Handling
-* [x] Model Evaluation
-* [x] Model Saving
-* [x] FastAPI Integration
-* [x] PostgreSQL Integration
-* [x] API Testing
+The PostgreSQL database connection details should also be configured locally and should not be committed to GitHub.
 
 ---
 
-# 🎓 Conclusion
+## Key Features
 
-This project demonstrates an end-to-end **AML/Fraud Detection System using Deep Learning**.
-
-The Deep Learning model identifies potentially fraudulent transactions, **SHAP provides explanations for model predictions**, FastAPI provides an interface for real-time prediction, and PostgreSQL stores transaction and prediction history.
-
-The combination of **Deep Learning, Explainable AI, REST API and Database Integration** makes the system suitable as an end-to-end academic AML/Fraud Detection project.
+* Deep Learning based fraud detection
+* Class imbalance handling
+* Model evaluation
+* SHAP explainability
+* Fairness analysis
+* FastAPI prediction API
+* PostgreSQL prediction storage
+* Reproducible preprocessing
+* Modular project structure
 
 ---
 
-## 👩‍💻 Author
+## Conclusion
 
-**Hiral Thakar**
+The project provides an end-to-end AML and fraud detection pipeline using Deep Learning.
 
-B.Sc. Data Science
+The trained neural network identifies potentially fraudulent transactions, while SHAP provides explanations for model predictions. Fairness analysis compares model behaviour across transaction types. FastAPI provides an interface for prediction, and PostgreSQL stores prediction results for future analysis.
+
+The project demonstrates how Deep Learning, Explainable AI, fairness analysis, APIs, and databases can be combined to create a practical fraud detection system.
